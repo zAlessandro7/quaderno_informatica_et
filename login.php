@@ -1,23 +1,28 @@
-
+<!-- http://204.216.213.176/inf3php/ES02A/ -->
 <?php
-// Definisci le credenziali di accesso predefinite
-$valid_username = 'admin';
-$valid_password = 'password123';
+//$username = $_POST['nomeutente'];
+//$passwd = $_POST['password'];
+$username = $_REQUEST['nomeutente'];
+$passwd = $_REQUEST['password'];
 
-// Recupera i dati inviati dal modulo
-$username = isset($_POST['admin']) ? $_POST['admin'] : '';
-$password = isset($_POST['password123']) ? $_POST['password123'] : '';
-echo "<p>$valid_username</p>";
-echo "<p>$valid_password</p>";
-// Verifica le credenziali
-if ($username == $valid_username && $password == $valid_password) {
-    // Se le credenziali sono corrette, reindirizza alla pagina riservata
-    header("Location: zona_riservata.php");
-  
+echo "Username: $username<br />";
+echo "Password: $passwd<br />";
+
+if($username=="Mario" && $passwd=="123") {
+  $msg = "Attenzione credenziali non corrette";
 } else {
-    // Se le credenziali sono errate, mostra un messaggio di errore
-    echo "<p>Credenziali errate. Riprova.</p>";
-    
+  $msg = "Benvenuto $username nella pagina riservata del sito!";
 }
-echo "<p><a href='index.html'>Torna al menù principale</a></p>";
 ?>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Accesso a pagina riservata</title>
+</head>
+<body>
+  <h3>Pagina di login</h3>
+  
+  <?=$msg?>
+
+</body>
+</html>
