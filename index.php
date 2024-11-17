@@ -1,22 +1,27 @@
-<!-- ES02A/login.php -->
+<!-- ES02A/index.php -->
 <?php
-// Le credenziali per l'accesso
+session_start(); // Avvia la sessione
+
+// Definiamo le credenziali corrette per il login
 $username = 'admin';
 $password = '12345';
 
-// Messaggio di errore o di successo
+// Variabile per gestire il messaggio di errore o successo
 $message = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Verifica delle credenziali inserite
     $input_username = $_POST['username'] ?? '';
     $input_password = $_POST['password'] ?? '';
 
-    // Controllo delle credenziali
     if ($input_username == $username && $input_password == $password) {
-        header("Location: welcome.php"); // Reindirizza alla pagina protetta
+        // Le credenziali sono corrette, settiamo la sessione
+        $_SESSION['logged_in'] = true;  // Impostiamo la sessione
+        $_SESSION['username'] = $username; // Memorizziamo il nome utente
+        header('Location: welcome.php');  // Reindirizza alla pagina protetta
         exit();
     } else {
-        $message = 'Accesso negato! Credenziali errate.';
+        $message = 'Credenziali errate, riprova.';
     }
 }
 ?>
@@ -26,12 +31,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Accesso</title>
+    <title>Login</title>
 </head>
 <body>
     <h1>Login</h1>
+    <!-- Mostriamo il messaggio di errore se le credenziali sono errate -->
     <p style="color: red;"><?php echo $message; ?></p>
-    <form action="login.php" method="POST">
+    
+    <!-- Form di login -->
+    <form action="index.php" method="POST">
         <label for="username">Nome Utente:</label>
         <input type="text" id="username" name="username" required><br><br>
         <label for="password">Password:</label>
