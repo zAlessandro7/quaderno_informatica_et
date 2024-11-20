@@ -1,11 +1,11 @@
 <form action="registrazione.php" method="POST">
-    <label for="username">Nome Utente:</label>
+    <label for="username">Nome Utente:</label><br>
     <input type="text" id="username" name="username" required>
 
-    <label for="password">Password:</label>
+    <label for="password">Password:</label><br>
     <input type="password" id="password" name="password" required>
 
-    <label for="confirm_password">Conferma Password:</label>
+    <label for="confirm_password">Conferma Password:</label><br>
     <input type="password" id="confirm_password" name="confirm_password" required>
 
     <button type="submit" name="registrati">Registrati</button>
@@ -14,22 +14,12 @@
 
 
 <?php
-// Connessione al database
-$servername = "localhost";
-$username_db = "root";
-$password_db = "";
-$dbname = "nome_del_tuo_database";  // Sostituisci con il nome del tuo database
+// Percorso del file di testo dove memorizzare le credenziali
+$file_path = 'utenti.txt';  // Il file 'utenti.txt' deve essere nella stessa cartella del tuo script PHP
 
-// Crea connessione
-$conn = new mysqli($servername, $username_db, $password_db, $dbname);
-
-// Verifica la connessione
-if ($conn->connect_error) {
-    die("Connessione fallita: " . $conn->connect_error);
-}
-
+// Verifica che il modulo sia stato inviato
 if (isset($_POST['registrati'])) {
-    // Recupera i dati del modulo
+    // Recupera i dati dal modulo
     $username = $_POST['username'];
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
@@ -38,29 +28,33 @@ if (isset($_POST['registrati'])) {
     if ($password !== $confirm_password) {
         echo "Le password non corrispondono!";
     } else {
-        // Sicurezza: fare il "hash" della password
+        // Crea l'hash della password per sicurezza
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-        // Prepara la query per inserire i dati nel database
-        $sql = "INSERT INTO utenti (username, password) VALUES (?, ?)";
-
-        if ($stmt = $conn->prepare($sql)) {
-            // Bind dei parametri
-            $stmt->bind_param("ss", $username, $hashed_password);
-
-            // Esegui la query
-            if ($stmt->execute()) {
-                echo "Registrazione riuscita!";
+        // Verifica se il file esiste
+        if (file_exists($file_path)) {
+            // Apri il file in modalità append per aggiungere nuove credenziali
+            $file = fopen($file_path, 'a');
+            if ($file) {
+                // Scrivi i dati nel file: username e password hashata
+                fwrite($file, "$username:$hashed_password\n");
+                fclose($file);  // Chiudi il file
+                echo "Registrazione completata con successo!";
             } else {
-                echo "Errore durante la registrazione: " . $stmt->error;
+                echo "Errore nell'aprire il file.";
             }
-
-            // Chiudi lo statement
-            $stmt->close();
+        } else {
+            // Se il file non esiste, crea il file e scrivi le credenziali
+            $file = fopen($file_path, 'w');
+            if ($file) {
+                fwrite($file, "$username:$hashed_password\n");
+                fclose($file);
+                echo "Registrazione completata con successo!";
+            } else {
+                echo "Errore nell'aprire il file.";
+            }
         }
     }
 }
-
-// Chiudi la connessione
-$conn->close();
 ?>
+
